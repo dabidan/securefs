@@ -41,6 +41,7 @@ static const unsigned MIN_DERIVE_SECONDS = 1;
 static const size_t CONFIG_IV_LENGTH = 32, CONFIG_MAC_LENGTH = 16;
 static const char* PBKDF_ALGO_PKCS5 = "pkcs5-pbkdf2-hmac-sha256";
 static const char* PBKDF_ALGO_SCRYPT = "scrypt";
+static const char* PBKDF_ALGO_NONE = "none";
 
 static const char* get_version_header(unsigned version)
 {
@@ -341,6 +342,15 @@ bool parse_config(const Json::Value& config,
         throwInvalidArgumentException(strprintf("Unsupported version %u", version));
     }
 
+    std::string pbkdf_algorithm = config.get("pbkdf", PBKDF_ALGO_PKCS5).asString();
+    if (pbkdf_algorithm == PBKDF_ALGO_NONE)
+    {
+        std::string key_hex = config["key"].asString();
+        master_key.resize(key_hex.size() / 2);
+        parse_hex(key_hex, master_key.data(), master_key.size());
+        return true;
+    }
+    
     unsigned iterations = config["iterations"].asUInt();
 
     byte iv[CONFIG_IV_LENGTH];
@@ -362,7 +372,6 @@ bool parse_config(const Json::Value& config,
     parse_hex(ekey_hex, encrypted_key.data(), encrypted_key.size());
     master_key.resize(encrypted_key.size());
 
-    std::string pbkdf_algorithm = config.get("pbkdf", PBKDF_ALGO_PKCS5).asString();
     VERBOSE_LOG("Setting the password key derivation function to %s", pbkdf_algorithm.c_str());
 
     if (pbkdf_algorithm == PBKDF_ALGO_PKCS5)
