@@ -15,7 +15,7 @@ matrix:
 deploy:
   provider: releases
   skip_cleanup: true
-  api_key: $GH_TOKEN
+  api_key: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9
   file_glob: true
   file:
     - "securefs"
