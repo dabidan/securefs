@@ -18,6 +18,6 @@ deploy:
   api_key: $GH_TOKEN
   file_glob: true
   file:
-    - "bin/*"
+    - "securefs"
   on:
-    tags: true
+    tags: false
