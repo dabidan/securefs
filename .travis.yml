@@ -1,13 +1,23 @@
 language: cpp
 matrix:
   include:
-    - os: osx
-      compiler: clang
-      install: "brew update && brew cask install osxfuse"
-      sudo: required
-      script: "cmake . && make -j4 && ./securefs v && ctest -V"
+#    - os: osx
+#      compiler: clang
+#      install: "brew update && brew cask install osxfuse"
+#      sudo: required
+#      script: "cmake . && make -j4 && ./securefs v && ctest -V"
     - os: linux
       dist: trusty
       sudo: required
       install: "sudo apt-get update && sudo apt-get install -y cmake fuse libfuse-dev"
       script: "cmake . && make -j4 && ./securefs v && ctest -V"
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key: $GH_TOKEN
+  file_glob: true
+  file:
+    - "bin/*"
+  on:
+    tags: true
